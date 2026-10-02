@@ -1,0 +1,11 @@
+VERSIÓN 5 - MI BELLO ARTE
+
+NUEVO APARTADO: CLIENTAS Y TARJETA DE FIDELIDAD
+• Registro de clientas con nombre y teléfono/WhatsApp.
+• Tarjeta de fidelidad individual.
+• 5 sellos = 1 regalo.
+• Registro de fecha de cada sello.
+• Registro de regalos entregados.
+• Al canjear el regalo, la tarjeta vuelve a 0 sellos para comenzar una nueva.
+• Tarjeta de fidelidad descargable como imagen PNG.
+• Se conservan pedidos, calendario, entregas, abonos, saldos y recibos.

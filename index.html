@@ -1,0 +1,126 @@
+<!doctype html><html lang="es-MX"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#c97aa6"><link rel="manifest" href="manifest.json"><title>MI BELLO ARTE</title>
+<style>
+:root{--p:#c97aa6;--p2:#efd0df;--bg:#fff7fb;--v:#7d3f5d;--t:#4e3440}*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:linear-gradient(145deg,#fff7fb,#f8e6ef);color:var(--t)}
+header{padding:18px;text-align:center;color:#fff;background:linear-gradient(145deg,#bd6f9b,#d88db2);border-radius:0 0 25px 25px}.logo{width:100px;height:100px;border-radius:50%;border:4px solid white;object-fit:cover}h1{margin:7px 0 0;font-size:25px}header p{margin:0;font-size:13px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:9px;background:#fff;position:sticky;top:0;z-index:4}nav button,.btn{border:0;border-radius:11px;padding:10px;background:var(--p2);color:var(--v);font-weight:700}nav .active,.btn.main{background:var(--p);color:#fff}
+main{max-width:760px;margin:auto;padding:12px}.tab{display:none}.tab.active{display:block}.card{background:white;border-radius:18px;padding:15px;margin:10px 0;box-shadow:0 5px 18px #8e496725}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:9px}input,select,textarea{width:100%;padding:11px;border:1px solid #e6bfd1;border-radius:10px;margin:4px 0 9px}textarea{min-height:75px}label{font-size:13px;font-weight:700}h2,h3{color:var(--v);margin-top:0}.stat{font-size:24px;font-weight:800;color:var(--v)}.item{background:var(--bg);border-left:5px solid var(--p);border-radius:10px;padding:11px;margin:7px 0}.small,.note{font-size:12px;color:#8b6877}.danger{color:#a23f5e;font-weight:800}.pill{background:var(--p2);padding:3px 7px;border-radius:12px;font-size:11px}.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.month{display:flex;align-items:center;justify-content:space-between}.month button{border:0;background:var(--p2);border-radius:50%;width:38px;height:38px;font-size:18px}.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal div{min-height:57px;padding:5px;background:#fff8fb;border-radius:8px;font-size:11px;cursor:pointer}.cal .head{min-height:20px;text-align:center;font-weight:700;color:var(--v);background:transparent;cursor:default}.cal .today{background:var(--p);color:white}.cal .has{outline:2px solid #d493b2}.cal .selected{box-shadow:inset 0 0 0 3px var(--v)}.notice{background:#fff0b8;border-left:5px solid #d7a53a;padding:9px;border-radius:9px;margin:7px 0}footer{text-align:center;padding:20px;color:#93647a;font-size:12px}
+</style></head><body>
+<header><img class="logo" src="icon-512.png"><h1>MI BELLO ARTE</h1><p>CREACIONES A CROCHET</p><button id="install" class="btn" style="display:none;margin-top:8px">📲 Instalar aplicación</button></header>
+<nav><button class="active" data-t="inicio">🏠 Inicio</button><button data-t="cal">📅 Calendario</button><button data-t="ped">🧶 Pedidos</button><button data-t="fin">💰 Finanzas</button><button class="tab" onclick="show('clientas')">Clientas</button></nav>
+<main>
+<section id="inicio" class="tab active"><div class="grid"><div class="card"><div class="small">Pedidos pendientes</div><div id="np" class="stat">0</div></div><div class="card"><div class="small">Por cobrar</div><div id="nc" class="stat">$0</div></div><div class="card"><div class="small">Ingresos</div><div id="ni" class="stat">$0</div></div></div><div id="alerts"></div><div class="card"><h2>🌸 Mi emprendimiento</h2><p>Consulta entregas, registra abonos y controla el saldo de cada pedido.</p><button class="btn main" onclick="tab('ped')">+ Nuevo pedido</button> <button class="btn" onclick="tab('cal')">📅 Ver entregas</button> <button class="btn" onclick="notif()">🔔 Activar notificaciones</button></div><div class="card"><h3>📌 Próximas entregas</h3><div id="next"></div></div></section>
+<section id="cal" class="tab"><div class="card"><div class="month"><button onclick="chg(-1)">‹</button><h2 id="mt"></h2><button onclick="chg(1)">›</button></div><div id="calendar" class="cal"></div><p class="note">Toca una fecha para ver las entregas de ese día. 🧶 indica que hay pedidos.</p><div id="day"></div></div></section>
+<section id="ped" class="tab"><div class="card"><h2>🧶 Nuevo pedido</h2><form id="of" class="grid"><div><label>Cliente</label><input id="oc" required></div><div><label>Producto</label><input id="op" required></div><div><label>Fecha del pedido</label><input id="ofe" type="date" required></div><div><label>Fecha de entrega</label><input id="od" type="date" required></div><div><label>Costo total</label><input id="ot" type="number" min="0" step=".01" required></div><div style="grid-column:1/-1"><label>Notas</label><textarea id="on"></textarea></div><div><button class="btn main">Guardar pedido</button></div></form></div><div class="card"><div id="orders"></div></div></section>
+<section id="fin" class="tab"><div class="grid"><div class="card"><h2>💰 Ingreso</h2><form id="inf"><label>Concepto</label><input id="ic" required><label>Monto</label><input id="im" type="number" step=".01" min="0" required><label>Fecha</label><input id="id" type="date" required><button class="btn main">Guardar</button></form></div><div class="card"><h2>💸 Gasto</h2><form id="exf"><label>Concepto</label><input id="gc" required><label>Monto</label><input id="gm" type="number" step=".01" min="0" required><label>Fecha</label><input id="gd" type="date" required><button class="btn main">Guardar</button></form></div></div><div class="card"><h2>Resumen</h2><p>Ingresos: <b id="ti">$0</b></p><p>Gastos: <b id="tg">$0</b></p><p>Balance: <b id="bal">$0</b></p><div id="tx"></div></div></section>
+</main><footer>💕 MI BELLO ARTE · Agenda de emprendimiento</footer>
+<script>
+const K="mba_v3",D=()=>JSON.parse(localStorage.getItem(K)||'{"orders":[],"income":[],"expenses":[]}');let db=D(),view=new Date(),sel=new Date().toISOString().slice(0,10);
+const save=()=>localStorage.setItem(K,JSON.stringify(db)),money=n=>new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(+n||0),today=()=>new Date().toISOString().slice(0,10),fd=s=>new Date(s+"T12:00:00").toLocaleDateString("es-MX"),esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function tab(id){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.t===id));render()}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
+function ab(o){return(o.abonos||[]).reduce((a,x)=>a+Number(x.monto),0)}function del(a,i){a.splice(i,1);save();render()}
+function addAb(i){let o=db.orders[i],s=o.total-ab(o),n=prompt("Monto del abono (saldo "+money(s)+"):");if(n===null)return;n=+n;if(!n||n<0||n>s)return alert("Monto no válido.");(o.abonos??=[]).push({monto:n,fecha:today()});save();render()}
+function receipt(i){
+ const o=db.orders[i],a=ab(o),s=Math.max(0,o.total-a),rows=(o.abonos||[]).length;
+ const c=document.createElement("canvas"),ctx=c.getContext("2d"),W=900,H=610+rows*62;c.width=W;c.height=H;
+ ctx.fillStyle="#fff7fb";ctx.fillRect(0,0,W,H);ctx.fillStyle="#c97aa6";ctx.fillRect(0,0,W,135);
+ ctx.fillStyle="#fff";ctx.textAlign="center";ctx.font="bold 34px system-ui";ctx.fillText("MI BELLO ARTE",W/2,52);
+ ctx.font="18px system-ui";ctx.fillText("CREACIONES A CROCHET",W/2,84);ctx.font="bold 24px system-ui";ctx.fillText("RECIBO DE PEDIDO",W/2,118);
+ ctx.textAlign="left";ctx.fillStyle="#4e3440";ctx.font="bold 20px system-ui";ctx.fillText("Cliente: "+o.cliente,55,175);
+ ctx.font="18px system-ui";ctx.fillText("Producto: "+o.producto,55,210);ctx.fillText("Pedido realizado: "+fd(o.pedidoFecha||today()),55,245);
+ ctx.fillText("Fecha de entrega: "+fd(o.fecha),55,280);ctx.font="bold 20px system-ui";ctx.fillText("Costo total: "+money(o.total),55,325);
+ ctx.font="bold 22px system-ui";ctx.fillStyle="#7d3f5d";ctx.fillText("HISTORIAL DE ABONOS",55,370);
+ let y=415;ctx.font="bold 17px system-ui";ctx.fillStyle="#4e3440";ctx.fillText("Fecha",70,y);ctx.fillText("Abono",650,y);ctx.font="17px system-ui";y+=32;
+ (o.abonos||[]).forEach(x=>{ctx.fillText(fd(x.fecha),70,y);ctx.fillText(money(x.monto),650,y);y+=62});
+ ctx.strokeStyle="#e6bfd1";ctx.beginPath();ctx.moveTo(55,y-20);ctx.lineTo(845,y-20);ctx.stroke();
+ ctx.font="bold 19px system-ui";ctx.fillText("Total abonado: "+money(a),55,y+22);ctx.fillText("Saldo pendiente: "+money(s),55,y+58);
+ ctx.font="14px system-ui";ctx.fillStyle="#93647a";ctx.fillText("Gracias por tu compra 💕",55,y+105);
+ const link=document.createElement("a");link.download="Recibo_"+o.cliente.replace(/[^a-z0-9]/gi,"_")+"_"+(o.pedidoFecha||today())+".png";link.href=c.toDataURL("image/png");link.click();
+}
+function entregado(i){db.orders[i].estado="Entregado";save();render()}
+function card(o,i){let a=ab(o),s=Math.max(0,o.total-a);return `<div class=item><b>${esc(o.producto)}</b> · ${esc(o.cliente)} <span class=pill>${s===0?"Pagado":esc(o.estado)}</span><br>📦 Entrega: <b>${fd(o.fecha)}</b><br>💵 Total: <b>${money(o.total)}</b> · Abonos: <b>${money(a)}</b> · Saldo: <b class="${s?"danger":""}">${money(s)}</b>${o.notas?"<br>📝 "+esc(o.notas):""}<div class=row><button class="btn" onclick="addAb(${i})">+ Abono</button><button class="btn" onclick="receipt(${i})">🧾 Crear recibo</button>${o.estado!=="Entregado"?`<button class="btn" onclick="entregado(${i})">✓ Entregado</button>`:""}<button class="btn" onclick="del(db.orders,${i})">Eliminar</button></div>${o.abonos?.length?'<div class=small><b>Historial de abonos:</b><br>'+o.abonos.map(x=>"📅 "+fd(x.fecha)+" · 💵 "+money(x.monto)).join("<br>")+"</div>":""}</div>`}
+of.onsubmit=e=>{e.preventDefault();db.orders.push({cliente:oc.value,producto:op.value,pedidoFecha:ofe.value,fecha:od.value,total:+ot.value,abonos:[],estado:"Pendiente",notas:on.value});e.target.reset();save();render();alert("Pedido guardado 💕")};
+inf.onsubmit=e=>{e.preventDefault();db.income.push({concepto:ic.value,monto:+im.value,fecha:id.value});e.target.reset();id.value=today();save();render()};
+exf.onsubmit=e=>{e.preventDefault();db.expenses.push({concepto:gc.value,monto:+gm.value,fecha:gd.value});e.target.reset();gd.value=today();save();render()};
+function chg(n){view.setMonth(view.getMonth()+n);cal()}
+function selectDay(s){sel=s;cal();showDay(s)}
+function showDay(s){let a=db.orders.filter(o=>o.fecha===s);day.innerHTML=`<div class=card><h3>📅 Entregas del ${fd(s)}</h3>${a.length?a.map(o=>card(o,db.orders.indexOf(o))).join(""):"<p>No hay entregas programadas.</p>"}</div>`}
+function cal(){let y=view.getFullYear(),m=view.getMonth(),names=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];mt.textContent=view.toLocaleDateString("es-MX",{month:"long",year:"numeric"});let f=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),h=names.map(x=>`<div class=head>${x}</div>`).join("");for(let i=0;i<f;i++)h+="<div></div>";for(let d=1;d<=days;d++){let s=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,a=db.orders.filter(o=>o.fecha===s),c=(s===today()?"today ":"")+(a.length?"has ":"")+(s===sel?"selected":"");h+=`<div class="${c}" onclick="selectDay('${s}')"><b>${d}</b>${a.length?"<br>🧶 "+a.length:""}</div>`}calendar.innerHTML=h;showDay(sel)}
+function check(){let due=db.orders.filter(o=>o.estado!=="Entregado"&&(Math.round((new Date(o.fecha+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5)===0||Math.round((new Date(o.fecha+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5)===1));alerts.innerHTML=due.map(o=>`<div class=notice>🔔 <b>${o.fecha===today()?"Entrega HOY":"Entrega MAÑANA"}:</b> ${esc(o.producto)} · ${esc(o.cliente)}</div>`).join("");if(Notification?.permission==="granted"){let sent=JSON.parse(localStorage.getItem("sent_"+today())||"[]");due.forEach(o=>{let k=o.cliente+"|"+o.producto+"|"+o.fecha;if(!sent.includes(k)){new Notification("MI BELLO ARTE",{body:(o.fecha===today()?"Entrega HOY: ":"Entrega MAÑANA: ")+o.producto+" · "+o.cliente,icon:"icon-192.png"});sent.push(k)}});localStorage.setItem("sent_"+today(),JSON.stringify(sent))}}
+async function notif(){if(!("Notification"in window))return alert("Tu navegador no admite notificaciones.");let p=await Notification.requestPermission();if(p==="granted"){check();alert("Notificaciones activadas 💕")}else alert("No se concedió permiso de notificaciones.")}
+
+function clientas(){db.clientas ??= []; return db.clientas}
+function addClienta(){
+ const nombre=prompt("Nombre de la clienta:");
+ if(!nombre || !nombre.trim()) return;
+ const telefono=prompt("WhatsApp o teléfono (opcional):") || "";
+ clientas().push({id:Date.now(),nombre:nombre.trim(),telefono,sellos:0,creada:today(),historial:[]});
+ save(); render();
+}
+function agregarSello(i){
+ const c=clientas()[i];
+ if(c.sellos>=5) return alert("Ya tiene 5 sellos. Registra primero el regalo para iniciar una nueva tarjeta.");
+ c.sellos++;
+ c.historial.push({tipo:"sello",fecha:today()});
+ save(); render();
+}
+function entregarRegalo(i){
+ const c=clientas()[i];
+ if(c.sellos<5) return alert("Aún necesita "+(5-c.sellos)+" sello(s).");
+ c.historial.push({tipo:"regalo",fecha:today()});
+ c.sellos=0;
+ save(); render();
+}
+function eliminarClienta(i){
+ if(confirm("¿Eliminar esta clienta y su historial de fidelidad?")){
+   clientas().splice(i,1); save(); render();
+ }
+}
+function descargarTarjeta(i){
+ const c=clientas()[i], cv=document.createElement("canvas"), ctx=cv.getContext("2d");
+ cv.width=900; cv.height=650;
+ ctx.fillStyle="#fff7fb"; ctx.fillRect(0,0,900,650);
+ ctx.fillStyle="#c97aa6"; ctx.fillRect(0,0,900,145);
+ ctx.fillStyle="#fff"; ctx.textAlign="center";
+ ctx.font="bold 38px system-ui"; ctx.fillText("MI BELLO ARTE",450,55);
+ ctx.font="18px system-ui"; ctx.fillText("TARJETA DE FIDELIDAD",450,92);
+ ctx.font="bold 23px system-ui"; ctx.fillText("5 SELLOS = 1 REGALO",450,127);
+ ctx.textAlign="left"; ctx.fillStyle="#4e3440";
+ ctx.font="bold 28px system-ui"; ctx.fillText(c.nombre,60,205);
+ ctx.font="18px system-ui"; if(c.telefono) ctx.fillText("WhatsApp: "+c.telefono,60,238);
+ ctx.fillStyle="#7d3f5d"; ctx.font="bold 21px system-ui"; ctx.fillText("SELLOS",60,300);
+ for(let j=0;j<5;j++){
+   const x=110+j*170;
+   ctx.beginPath(); ctx.arc(x,370,48,0,Math.PI*2);
+   ctx.fillStyle=j<c.sellos?"#c97aa6":"#f0d7e3"; ctx.fill();
+   ctx.strokeStyle="#b86b91"; ctx.stroke();
+   ctx.fillStyle=j<c.sellos?"#fff":"#8f6577"; ctx.textAlign="center";
+   ctx.font="bold 26px system-ui"; ctx.fillText(j<c.sellos?"✓":String(j+1),x,378);
+ }
+ ctx.textAlign="left"; ctx.fillStyle="#4e3440"; ctx.font="bold 20px system-ui";
+ ctx.fillText(c.sellos+" de 5 sellos acumulados",60,475);
+ ctx.font="18px system-ui";
+ ctx.fillText(c.sellos===5?"🎁 ¡Regalo disponible!":"Faltan "+(5-c.sellos)+" sello(s) para tu regalo.",60,515);
+ ctx.fillStyle="#93647a"; ctx.font="15px system-ui";
+ ctx.fillText("Gracias por elegir MI BELLO ARTE 💕",60,590);
+ const a=document.createElement("a");
+ a.download="Tarjeta_Fidelidad_"+c.nombre.replace(/[^a-z0-9]/gi,"_")+".png";
+ a.href=cv.toDataURL("image/png"); a.click();
+}
+function renderClientas(){
+ const box=document.getElementById("clientas"); if(!box) return;
+ const cs=clientas();
+ box.innerHTML='<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div><h2>💗 Clientas y fidelidad</h2><div class="small">5 sellos = 1 regalo</div></div><button class="btn" onclick="addClienta()">+ Nueva clienta</button></div></div>'+
+ (cs.length ? cs.map((c,i)=>'<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0">'+c.nombre+'</h3><div class="small">'+(c.telefono||"Sin teléfono")+' · Cliente desde '+fd(c.creada)+'</div></div><b>'+c.sellos+'/5 sellos</b></div><div style="display:flex;gap:10px;margin:16px 0;flex-wrap:wrap">'+[0,1,2,3,4].map(n=>'<span style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:'+(n<c.sellos?"#c97aa6":"#f0d7e3")+';color:'+(n<c.sellos?"#fff":"#8f6577")+';font-weight:700">'+(n<c.sellos?"✓":n+1)+'</span>').join("")+'</div><div class="row" style="flex-wrap:wrap"><button class="btn" onclick="agregarSello('+i+')">＋ Sello</button><button class="btn" onclick="entregarRegalo('+i+')">🎁 Entregar regalo</button><button class="btn" onclick="descargarTarjeta('+i+')">🪪 Descargar tarjeta</button><button class="btn" onclick="eliminarClienta('+i+')">Eliminar</button></div>'+(c.historial.length?'<div class="small" style="margin-top:12px"><b>Historial:</b><br>'+c.historial.map(x=>x.tipo==="sello"?"📅 Sello · "+fd(x.fecha):"🎁 Regalo entregado · "+fd(x.fecha)).join("<br>")+'</div>':"")+'</div>').join("") : '<div class="card small">Aún no tienes clientas registradas. Pulsa “+ Nueva clienta” para comenzar.</div>');
+}
+
+function render(){let inc=db.income.reduce((a,x)=>a+x.monto,0),g=db.expenses.reduce((a,x)=>a+x.monto,0),pc=db.orders.reduce((a,o)=>a+Math.max(0,o.total-ab(o)),0);np.textContent=db.orders.filter(o=>o.estado!=="Entregado").length;nc.textContent=money(pc);ni.textContent=money(inc);ti.textContent=money(inc);tg.textContent=money(g);bal.textContent=money(inc-g);orders.innerHTML=db.orders.length?[...db.orders].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(o=>card(o,db.orders.indexOf(o))).join(""):"<p>No hay pedidos.</p>";next.innerHTML=[...db.orders].filter(o=>o.estado!=="Entregado").sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5).map(o=>card(o,db.orders.indexOf(o))).join("")||"<p>Todo al día ✨</p>";tx.innerHTML=[...db.income.map((x,i)=>`<div class=item>➕ ${fd(x.fecha)} · ${esc(x.concepto)} · ${money(x.monto)} <button class=btn onclick="del(db.income,${i})">×</button></div>`),...db.expenses.map((x,i)=>`<div class=item>➖ ${fd(x.fecha)} · ${esc(x.concepto)} · ${money(x.monto)} <button class=btn onclick="del(db.expenses,${i})">×</button></div>`)].join("")||"<p>Sin movimientos.</p>";cal();check()
+renderClientas();
+}
+[id,gd,od,ofe].forEach(x=>x.value=today());render();setInterval(check,60000);
+let dp;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;install.style.display="inline-block"});install.onclick=()=>dp?.prompt();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+</script><section id="clientas" class="view" style="display:none"></section></body></html>
